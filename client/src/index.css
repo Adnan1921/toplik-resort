@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Toplik Village Resort Design System */
+
+@layer base {
+  :root {
+    /* Aurora background variables */
+    --white: #ffffff;
+    --black: #000000;
+    --transparent: transparent;
+    
+    /* Main brand colors */
+    --background: 36 27% 94%;
+    --foreground: 135 39% 19%;
+
+    --card: 36 27% 96%;
+    --card-foreground: 135 39% 19%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 135 39% 19%;
+
+    /* Dark green #1E4528 - primary brand color */
+    --primary: 135 39% 19%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 36 27% 90%;
+    --secondary-foreground: 135 39% 19%;
+
+    --muted: 36 15% 88%;
+    --muted-foreground: 135 20% 40%;
+
+    --accent: 43 74% 49%;
+    --accent-foreground: 135 39% 19%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 36 20% 85%;
+    --input: 36 20% 85%;
+    --ring: 135 39% 19%;
+    
+    /* Button specific */
+    --button-border: 36 45% 92%;
+    --button-bg: 0 0% 100%;
+    
+    /* Typography colors */
+    --title-text: 126 71% 10%;
+    --body-text: 150 1% 38%;
+
+    /* Hero section */
+    --hero-bg: 29 42% 89%;
+    
+    /* Awards section */
+    --green-accent: 135 39% 19%;
+    --golden: 39 49% 59%;
+    
+    /* Aurora colors */
+    --beige-light: 36 40% 85%;
+    --golden-light: 43 60% 70%;
+    --cream: 40 30% 90%;
+
+    --radius: 0.5rem;
+
+    /* Top bar */
+    --topbar: 135 39% 19%;
+    --topbar-foreground: 0 0% 100%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 156 30% 10%;
+    --foreground: 36 27% 94%;
+
+    --card: 156 30% 12%;
+    --card-foreground: 36 27% 94%;
+
+    --popover: 156 30% 12%;
+    --popover-foreground: 36 27% 94%;
+
+    --primary: 43 74% 49%;
+    --primary-foreground: 156 30% 10%;
+
+    --secondary: 156 25% 18%;
+    --secondary-foreground: 36 27% 94%;
+
+    --muted: 156 25% 18%;
+    --muted-foreground: 36 15% 65%;
+
+    --accent: 43 74% 49%;
+    --accent-foreground: 156 30% 10%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 156 25% 18%;
+    --input: 156 25% 18%;
+    --ring: 43 74% 49%;
+
+    --topbar: 156 35% 20%;
+    --topbar-foreground: 0 0% 100%;
+
+    --sidebar-background: 156 30% 10%;
+    --sidebar-foreground: 36 27% 94%;
+    --sidebar-primary: 43 74% 49%;
+    --sidebar-primary-foreground: 156 30% 10%;
+    --sidebar-accent: 156 25% 18%;
+    --sidebar-accent-foreground: 36 27% 94%;
+    --sidebar-border: 156 25% 18%;
+    --sidebar-ring: 43 74% 49%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Martel', serif;
+  }
+}
