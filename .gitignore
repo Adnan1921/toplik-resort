@@ -30,3 +30,5 @@ client/.env.production
 *.njsproj
 *.sln
 *.sw?
+.vercel
+.env.vercel
