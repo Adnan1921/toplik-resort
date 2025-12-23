@@ -17,7 +17,6 @@ import copperSuiteImage from "@/assets/copper-suite.jpg";
 import goldenSuiteImage from "@/assets/golden-suite.jpg";
 import { useParams } from "wouter";
 import { useState, useCallback, useEffect } from "react";
-import { listR2Files } from "@/lib/r2";
 import { supabase } from "@/lib/supabase";
 
 // Apartman data type (from Supabase)
@@ -471,22 +470,11 @@ const ApartmanDetails = () => {
 
   // Load images from R2
   useEffect(() => {
-    const loadR2Images = async () => {
-      setLoadingImages(true);
-      try {
-        const result = await listR2Files(slug);
-        if (result.success && result.files && result.files.length > 0) {
-          const imageUrls = result.files.map(file => file.url);
-          setR2Images(imageUrls);
-        }
-      } catch (error) {
-        console.error('Error loading R2 images:', error);
-      } finally {
-        setLoadingImages(false);
-      }
-    };
-
-    loadR2Images();
+    // TODO: Implement backend API for R2 image listing
+    // For now, R2 listing is disabled on frontend to avoid AWS SDK browser issues
+    // Images will be managed through admin panel only
+    setLoadingImages(false);
+    setR2Images([]); // No R2 images for now
   }, [slug]);
 
   // Use R2 images if available, otherwise fallback to hardcoded gallery or main image
