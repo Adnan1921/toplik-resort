@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createHmac } from 'crypto';
+import { createHmac, createHash } from 'crypto';
 
 // AWS Signature V4 signing
 function getSignatureKey(key: string, dateStamp: string, regionName: string, serviceName: string) {
@@ -51,7 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const dateStamp = amzDate.substr(0, 8);
     
     const contentType = 'image/jpeg';
-    const payloadHash = createHmac('sha256', '').update(buffer).digest('hex');
+    const payloadHash = createHash('sha256').update(buffer).digest('hex');
     
     const canonicalHeaders = `host:${R2_ACCOUNT_ID}.r2.cloudflarestorage.com\nx-amz-content-sha256:${payloadHash}\nx-amz-date:${amzDate}\n`;
     const signedHeaders = 'host;x-amz-content-sha256;x-amz-date';
@@ -59,7 +59,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     const algorithm = 'AWS4-HMAC-SHA256';
     const credentialScope = `${dateStamp}/auto/s3/aws4_request`;
-    const stringToSign = `${algorithm}\n${amzDate}\n${credentialScope}\n${createHmac('sha256', '').update(canonicalRequest).digest('hex')}`;
+    const canonicalRequestHash = createHash('sha256').update(canonicalRequest).digest('hex');
+    const stringToSign = `${algorithm}\n${amzDate}\n${credentialScope}\n${canonicalRequestHash}`;
     
     const signingKey = getSignatureKey(R2_SECRET_ACCESS_KEY, dateStamp, 'auto', 's3');
     const signature = createHmac('sha256', signingKey).update(stringToSign).digest('hex');
