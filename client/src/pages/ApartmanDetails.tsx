@@ -468,16 +468,40 @@ const ApartmanDetails = () => {
     loadApartment();
   }, [slug]);
 
-  // Load images from R2
+  // Load images from Supabase (R2 URLs stored in database)
   useEffect(() => {
-    // TODO: Implement backend API for R2 image listing
-    // For now, R2 listing is disabled on frontend to avoid AWS SDK browser issues
-    // Images will be managed through admin panel only
-    setLoadingImages(false);
-    setR2Images([]); // No R2 images for now
+    const loadImagesFromSupabase = async () => {
+      if (!slug) return;
+      
+      setLoadingImages(true);
+      try {
+        const { data, error } = await supabase
+          .from('apartments')
+          .select('image_urls')
+          .eq('slug', slug)
+          .eq('is_published', true)
+          .single();
+
+        if (error) {
+          console.error('Error loading images from Supabase:', error);
+          setR2Images([]);
+        } else if (data?.image_urls && Array.isArray(data.image_urls)) {
+          setR2Images(data.image_urls);
+        } else {
+          setR2Images([]);
+        }
+      } catch (error) {
+        console.error('Error loading images:', error);
+        setR2Images([]);
+      } finally {
+        setLoadingImages(false);
+      }
+    };
+
+    loadImagesFromSupabase();
   }, [slug]);
 
-  // Use R2 images if available, otherwise fallback to hardcoded gallery or main image
+  // Use R2 images from Supabase if available, otherwise fallback to hardcoded gallery or main image
   const galleryImages = r2Images.length > 0 ? r2Images : (apartman?.gallery || (apartman?.image ? [apartman.image] : []));
 
   // Show loading state

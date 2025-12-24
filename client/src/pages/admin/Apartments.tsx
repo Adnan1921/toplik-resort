@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, Save, X, GripVertical, Upload, Copy, Loader2, Image as ImageIcon, Star } from "lucide-react";
-import { uploadToR2, listR2Files, deleteFromR2 } from "@/lib/r2";
+import { listR2Files } from "@/lib/r2";
+import { uploadToR2API, deleteFromR2API } from "@/lib/r2-api";
 import {
   Dialog,
   DialogContent,
@@ -185,6 +186,7 @@ export default function Apartments() {
 
     setUploadingImages(true);
     const newProgress: Record<string, number> = {};
+    const uploadedUrls: string[] = [];
 
     try {
       for (let i = 0; i < files.length; i++) {
@@ -194,7 +196,7 @@ export default function Apartments() {
         setUploadProgress({ ...newProgress });
 
         try {
-          const result = await uploadToR2({
+          const result = await uploadToR2API({
             file: file,
             folder: editingApartment.slug,
             compress: true,
@@ -206,7 +208,8 @@ export default function Apartments() {
             }
           });
 
-          if (result.success) {
+          if (result.success && result.url) {
+            uploadedUrls.push(result.url);
             toast.success(`${fileName} uspješno uploadovan!`);
           } else {
             toast.error(`Greška pri uploadu ${fileName}: ${result.error}`);
@@ -214,6 +217,30 @@ export default function Apartments() {
         } catch (fileError: any) {
           console.error(`Error uploading ${fileName}:`, fileError);
           toast.error(`Greška pri uploadu ${fileName}: ${fileError.message || 'Nepoznata greška'}`);
+        }
+      }
+
+      // Save uploaded URLs to Supabase
+      if (uploadedUrls.length > 0) {
+        const { data: currentApartment } = await supabase
+          .from('apartments')
+          .select('image_urls')
+          .eq('id', editingApartment.id)
+          .single();
+
+        const existingUrls = currentApartment?.image_urls || [];
+        const updatedUrls = [...existingUrls, ...uploadedUrls];
+
+        const { error: updateError } = await supabase
+          .from('apartments')
+          .update({ image_urls: updatedUrls })
+          .eq('id', editingApartment.id);
+
+        if (updateError) {
+          console.error('Error saving URLs to Supabase:', updateError);
+          toast.error('Slike uploadovane na R2, ali greška pri čuvanju URL-ova');
+        } else {
+          toast.success(`${uploadedUrls.length} URL-ova sačuvano u bazu!`);
         }
       }
 
@@ -235,9 +262,35 @@ export default function Apartments() {
     if (!confirm('Da li ste sigurni da želite obrisati ovu sliku?')) return;
 
     try {
-      const result = await deleteFromR2(imageKey);
+      // Delete from R2
+      const result = await deleteFromR2API(imageKey);
       if (result.success) {
-        toast.success('Slika uspješno obrisana!');
+        // Remove URL from Supabase
+        const { data: currentApartment } = await supabase
+          .from('apartments')
+          .select('image_urls')
+          .eq('id', editingApartment.id)
+          .single();
+
+        if (currentApartment?.image_urls) {
+          // Find and remove the URL that contains this imageKey
+          const updatedUrls = currentApartment.image_urls.filter(
+            (url: string) => !url.includes(imageKey)
+          );
+
+          const { error: updateError } = await supabase
+            .from('apartments')
+            .update({ image_urls: updatedUrls })
+            .eq('id', editingApartment.id);
+
+          if (updateError) {
+            console.error('Error updating Supabase:', updateError);
+            toast.error('Slika obrisana sa R2, ali greška pri ažuriranju baze');
+          } else {
+            toast.success('Slika uspješno obrisana!');
+          }
+        }
+
         await loadImages(editingApartment.slug);
       } else {
         toast.error(`Greška pri brisanju: ${result.error}`);
