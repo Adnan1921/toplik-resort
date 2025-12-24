@@ -3,9 +3,9 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // Initialize R2 client
 const getR2Client = () => {
-  const R2_ACCOUNT_ID = process.env.VITE_R2_ACCOUNT_ID;
-  const R2_ACCESS_KEY_ID = process.env.VITE_R2_ACCESS_KEY_ID;
-  const R2_SECRET_ACCESS_KEY = process.env.VITE_R2_SECRET_ACCESS_KEY;
+  const R2_ACCOUNT_ID = process.env.VITE_R2_ACCOUNT_ID?.trim();
+  const R2_ACCESS_KEY_ID = process.env.VITE_R2_ACCESS_KEY_ID?.trim();
+  const R2_SECRET_ACCESS_KEY = process.env.VITE_R2_SECRET_ACCESS_KEY?.trim();
 
   if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY) {
     throw new Error('R2 credentials not configured');

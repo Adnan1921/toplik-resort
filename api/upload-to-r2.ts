@@ -30,11 +30,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing file or fileName' });
     }
 
-    const R2_ACCOUNT_ID = process.env.VITE_R2_ACCOUNT_ID;
-    const R2_ACCESS_KEY_ID = process.env.VITE_R2_ACCESS_KEY_ID;
-    const R2_SECRET_ACCESS_KEY = process.env.VITE_R2_SECRET_ACCESS_KEY;
-    const R2_BUCKET_NAME = process.env.VITE_R2_BUCKET_NAME;
-    const R2_PUBLIC_URL = process.env.VITE_R2_PUBLIC_URL;
+    const R2_ACCOUNT_ID = process.env.VITE_R2_ACCOUNT_ID?.trim();
+    const R2_ACCESS_KEY_ID = process.env.VITE_R2_ACCESS_KEY_ID?.trim();
+    const R2_SECRET_ACCESS_KEY = process.env.VITE_R2_SECRET_ACCESS_KEY?.trim();
+    const R2_BUCKET_NAME = process.env.VITE_R2_BUCKET_NAME?.trim();
+    const R2_PUBLIC_URL = process.env.VITE_R2_PUBLIC_URL?.trim();
 
     if (!R2_ACCOUNT_ID || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY || !R2_BUCKET_NAME) {
       throw new Error('R2 credentials not configured');
@@ -64,6 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const signingKey = getSignatureKey(R2_SECRET_ACCESS_KEY, dateStamp, 'auto', 's3');
     const signature = createHmac('sha256', signingKey).update(stringToSign).digest('hex');
     
+    // Note: No space after "AWS4-HMAC-SHA256" and no spaces after commas
     const authorizationHeader = `${algorithm} Credential=${R2_ACCESS_KEY_ID}/${credentialScope},SignedHeaders=${signedHeaders},Signature=${signature}`;
 
     // Upload using fetch
